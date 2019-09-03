@@ -1,0 +1,15 @@
+body { font: 14px/1.4 sans-serif; }
+table { width: 100%; border-collapse: collapse; border-spacing: 0; }
+tr th:nth-child(1) { width: 30%; }
+tr th:nth-child(2) { width: 20%; }
+tr th:nth-child(3) { width: 10%; }
+tr th:nth-child(4) { width: 10%; }
+tr th:nth-child(5) { width: 10%; }
+tr th:nth-child(6) { width: 10%; }
+tr th:nth-child(7) { width: 10%; }
+th, td { text-align: left; padding: 0.2em 1em; }
+th, td { border: 1px solid #eee; }
+th { background: #eee; }
+th:hover { background: #ddd; }
+select { max-width: 16em; }
+
