@@ -1,34 +1,50 @@
 <!doctype html>
 <title>Datasets</title>
-<script src='tablesort.min.js'></script>
-<script src='tablesort.number.js'></script>
-<link rel=stylesheet href=tablesort.css>
-<link rel=stylesheet href=overview.css>
+<script src="https://data.gbif.no/overview/tablefilter/tablefilter.js"></script>
+<link rel="stylesheet" href="https://data.gbif.no/overview/overview.css">
 
 <table id=datasets>
   <thead>
   <tr>
     <th>Title</th>
     <th>Organization</th>
-    <th data-sort-method='number'>Occurrences</th>
+    <th data-sort-method="number">Occurrences</th>
     <th>Type</th>
     <th>Source</th>
+    <th>Created</th>
+    <th>Modified</th>
   </tr>
   </thead>
   <tbody>
 {{#datasets}}
   <tr>
-    <td><a href='https://gbif.org/dataset/{{key}}'>{{title}}</td>
+    <td><a href="https://gbif.org/dataset/{{key}}">{{title}}</td>
     <td>{{organization}}</td>
     <td>{{occurrenceCount}}</td>
     <td>{{type}}</td>
     <td>{{installation}}</td>
+    <td>{{created}}</td>
+    <td>{{modified}}</td>
   </tr>
 {{/datasets}}
   </tbody>
 </table>
 
 <script>
-new Tablesort(document.getElementById('datasets'));
+var tf = new TableFilter(document.getElementById("datasets"), {
+  base_path: "https://data.gbif.no/overview/tablefilter/",
+  alternate_rows: true,
+  col_types: ['string', 'string', 'number', 'string', 'string', 'date', 'date'],
+  col_0: 'none',
+  col_1: 'select',
+  col_2: 'none',
+  col_3: 'select',
+  col_4: 'select',
+  col_5: 'none',
+  col_6: 'none',
+  clear_filter_text: '- All -',
+  extensions: [{ name: 'sort' }]
+});
+tf.init();
 </script>
 
