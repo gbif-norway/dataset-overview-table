@@ -42,11 +42,16 @@ for result in response['results']:
         'modified': dateparser.parse(data['modified']).strftime("%Y-%m-%d"),
     })
 
-template = open("template.html", "r").read()
 datasets = sorted(datasets, key=lambda k: (k['type'], k['title']))
-
 renderer = pystache.Renderer()
-html = renderer.render(template, { 'datasets': datasets })
 
-print(html)
+template = open("template.html", "r").read()
+html = renderer.render(template, { 'datasets': datasets })
+with open('index.html', 'w') as f:
+  f.write(html)
+
+template = open("template_pivot.html", "r").read()
+html = renderer.render(template, { 'datasets': json.dumps(datasets) })
+with open('pivot.html', 'w') as f:
+  f.write(html)
 

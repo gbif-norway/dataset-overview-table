@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Datasets Pivot</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css">
+    <style>
+table.pvtTable tbody tr th, table.pvtTable thead tr th { font-size: 1em; }
+table.pvtTable { font-size: 1em; }
+td { padding: 15px; }
+select { font-size: 1em; }
+#pivot { font-family: Arial; }
+    </style>
+  </head>
+  <body>
+  <div id="pivot"></div>
+  <script>
+  var datasets = '{{datasets}}'.replace(/&quot;/g, '"');
+  datasets = JSON.parse(datasets);
+  //var datasets = [{'organization': 'NTNTU', 'occurrenceCount': 5, 'key': 1}, {'organization': 'NTNTU', 'occurrenceCount': 15, 'key': 2}, {'organization': 'NHM', 'occurrenceCount': 7, 'key': 1}];
+  $("#pivot").pivotUI(datasets, {
+    rows: ['organization'],
+    cols: [''],
+    aggregatorName: "Integer Sum",
+    vals: ["occurrenceCount"]
+  });
+  </script>
+  </body>
+</html>
