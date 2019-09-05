@@ -46,12 +46,7 @@ datasets = sorted(datasets, key=lambda k: (k['type'], k['title']))
 renderer = pystache.Renderer()
 
 template = open("template.html", "r").read()
-html = renderer.render(template, { 'datasets': datasets })
+html = renderer.render(template, { 'datasets': datasets, 'datasets_string': json.dumps(datasets) })
 with open('index.html', 'w') as f:
-  f.write(html)
-
-template = open("template_pivot.html", "r").read()
-html = renderer.render(template, { 'datasets': json.dumps(datasets) })
-with open('pivot.html', 'w') as f:
   f.write(html)
 

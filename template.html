@@ -1,7 +1,32 @@
 <!doctype html>
+<html>
+<head>
 <title>Datasets</title>
 <script src="https://data.gbif.no/overview/tablefilter/tablefilter.js"></script>
 <link rel="stylesheet" href="https://data.gbif.no/overview/overview.css">
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css">
+<style>
+table.pvtTable tbody tr th, table.pvtTable thead tr th { font-size: 1em; }
+table.pvtTable { font-size: 1em; }
+td { padding: 15px; }
+select { font-size: 1em; }
+#pivot { font-family: Arial; }
+#overviewButton, #pivotButton {display: inline-block; background-color: #F0F0F0; padding: 10px; margin-right: 10px;}
+a.active { background-color: #7DB95F !important; color: #FFF; }
+</style>
+</head>
+<body>
+
+<a id="overviewButton" href="#" class="active">Overview table</a>
+<a id="pivotButton" href="#">Summary</a>
+
+<div id="pivot" style="display: none"></div>
 
 <table id="datasets">
   <thead>
@@ -46,5 +71,29 @@ var tf = new TableFilter(document.getElementById("datasets"), {
   extensions: [{ name: 'sort' }]
 });
 tf.init();
-</script>
 
+var datasets = '{{datasets_string}}'.replace(/&quot;/g, '"');
+datasets = JSON.parse(datasets);
+//var datasets = [{'organization': 'NTNTU', 'occurrenceCount': 5, 'key': 1}, {'organization': 'NTNTU', 'occurrenceCount': 15, 'key': 2}, {'organization': 'NHM', 'occurrenceCount': 7, 'key': 1}];
+$("#pivot").pivotUI(datasets, {
+  rows: ['organization'],
+  cols: [''],
+  aggregatorName: "Integer Sum",
+  vals: ["occurrenceCount"]
+});
+
+$('#pivotButton').click(function() { 
+    $('#pivot').show(); 
+    $('#datasets').hide(); 
+    $('#pivotButton').addClass('active'); 
+    $('#overviewButton').removeClass('active'); 
+});
+$('#overviewButton').click(function() { 
+    $('#pivot').hide(); 
+    $('#datasets').show(); 
+    $('#pivotButton').removeClass('active'); 
+    $('#overviewButton').addClass('active'); 
+});
+</script>
+</body>
+</html>
