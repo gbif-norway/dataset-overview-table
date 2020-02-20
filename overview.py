@@ -4,11 +4,7 @@ import sys
 import json
 import pystache
 import requests
-from dateutil import parser as dateparser
-import dateutil
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
+from datetime import datetime
 
 GBIF = "https://api.gbif.org/v1/"
 
@@ -38,8 +34,8 @@ for result in response['results']:
         'installation': sources[source]['title'],
         'organization': result['publishingOrganizationTitle'],
         'type': result['type'].replace("_", " ").capitalize(),
-        'created': dateparser.parse(data['created']).strftime("%Y-%m-%d"),
-        'modified': dateparser.parse(data['modified']).strftime("%Y-%m-%d"),
+        'created': datetime.fromisoformat(data['created'][:19]).strftime("%Y-%m-%d"),
+        'modified': datetime.fromisoformat(data['modified'][:19]).strftime("%Y-%m-%d"),
     })
 
 datasets = sorted(datasets, key=lambda k: (k['type'], k['title']))
