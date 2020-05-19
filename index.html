@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Datasets</title>
-<!--<script src="https://data.gbif.no/overview/tablefilter/tablefilter.js"></script>-->
 <link rel="stylesheet" href="https://data.gbif.no/overview/overview.css">
 
 <script src="https://unpkg.com/tablefilter@0.6.109/dist/tablefilter/tablefilter.js"></script>
@@ -44,62 +43,71 @@ a.active { background-color: #7DB95F !important; color: #FFF; }
 </table>
 
 <script>
-    function createTableJS() {
-var tf = new TableFilter(document.getElementById("datasets"), {
-    //base_path: "https://data.gbif.no/overview/tablefilter/",
-    base_path: "https://unpkg.com/tablefilter@0.6.109/dist/tablefilter/",
-    alternate_rows: true,
-    col_types: ['string', 'string', 'number', 'string', 'string', 'date', 'date'],
-    col_1: 'select',
-    col_2: 'none',
-    col_3: 'select',
-    col_4: 'select',
-    col_5: 'none',
-    col_6: 'none',
-    clear_filter_text: '- All -',
-    extensions: [{ name: 'sort' }]
-  });
-  tf.init();
-
-  // Pivot
-  $("#pivot").pivotUI(datasets['results'], {
-    rows: ['publishingOrganizationTitle'],
-    cols: [''],
-    aggregatorName: "Integer Sum",
-    vals: ["recordCount"]
-  });
-
+function createTableJS() {
     }
 
 function callback (datasets) {
   // Main filterable table
   var tableRef = document.getElementById('datasets').getElementsByTagName('tbody')[0];
-  datasets['results'].forEach(result => {
+  datasets.forEach(result => {
     newRow = tableRef.insertRow();
-    newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td>' + result['newRecordCount'] + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
+    newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td  id="' + result['key'] + '">' + result['recordCount'] + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
   });
-  }
+}
 
-
-var temp = async(datasets) => {
-    var itemsProcessed = 0;
-    for(var res of datasets['results']) {
-        const d_response = await fetch('https://api.gbif.org/v1/occurrence/search?datasetKey=' + res['key'] + '&limit=1')
-        var occurrences = await d_response.json();
-        res['newRecordCount'] = occurrences['count'];
+var getOtherDatasetCounts = async(datasets) => {
+    for(var res of datasets) {
+        if('recordCount' in res) { continue; }
+        var cellRef = document.getElementById(res['key']);
+        var count = 0;
+        if(res['type'] == 'OCCURRENCE' || res['type'] == 'SAMPLING_EVENT') {
+            const d_response = await fetch('https://api.gbif.org/v1/occurrence/count?datasetKey=' + res['key'])
+            count = await d_response.json();
+        } else if(res['type'] == 'CHECKLIST') { 
+            const d_response = await fetch('http://api.gbif.org/v1/dataset/' + res['key'] + '/metrics')
+            var response = await d_response.json();
+            count = response['countByOrigin']['SOURCE'];
+        }
+        cellRef.innerHTML = count;
+        res['recordCount'] = count;
     }
-    return datasets;
 }
 
 const pageLoad = async () => {
     const ds_response = await fetch('https://api.gbif.org/v1/dataset/search?publishingCountry=NO&limit=500');
-    var datasets = await ds_response.json();
-    console.log(datasets);
-    console.log('first');
-    datasets = await temp(datasets);
-    console.log(datasets);
-    console.log('above')
-    callback(datasets);
+    var dataset_results = await ds_response.json();
+    datasets = dataset_results['results'];
+    await callback(datasets);
+    //createTableJS();
+
+    var tf = new TableFilter(document.getElementById("datasets"), {
+      //base_path: "https://data.gbif.no/overview/tablefilter/",
+      base_path: "https://unpkg.com/tablefilter@0.6.109/dist/tablefilter/",
+      alternate_rows: true,
+      col_types: ['string', 'string', 'number', 'string', 'string', 'date', 'date'],
+      col_1: 'select',
+      col_2: 'none',
+      col_3: 'select',
+      col_4: 'select',
+      col_5: 'none',
+      col_6: 'none',
+      clear_filter_text: '- All -',
+      extensions: [{ name: 'sort' }]
+    });
+    tf.init();
+
+    await getOtherDatasetCounts(datasets);
+
+    // Pivot
+    $("#pivot").pivotUI(datasets, {
+      rows: ['publishingOrganizationTitle'],
+      cols: [''],
+      aggregatorName: "Integer Sum",
+      vals: ["recordCount"]
+    });
+
+    // Have to reinitialise the table so sort by count is correct
+    tf.init();
 }
 pageLoad();
 
