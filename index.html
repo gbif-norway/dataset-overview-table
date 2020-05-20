@@ -19,6 +19,7 @@ select { font-size: 1em; }
 #pivot { font-family: Arial; }
 #overviewButton, #pivotButton {display: inline-block; background-color: #F0F0F0; padding: 10px; margin-right: 10px;}
 a.active { background-color: #7DB95F !important; color: #FFF; }
+.table-number { text-align: right; }
 </style>
 </head>
 <body>
@@ -43,15 +44,12 @@ a.active { background-color: #7DB95F !important; color: #FFF; }
 </table>
 
 <script>
-function createTableJS() {
-    }
-
 function callback (datasets) {
   // Main filterable table
   var tableRef = document.getElementById('datasets').getElementsByTagName('tbody')[0];
   datasets.forEach(result => {
     newRow = tableRef.insertRow();
-    newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td  id="' + result['key'] + '">' + result['recordCount'] + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
+    newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td  id="' + result['key'] + '" class="table-number">' + parseInt(result['recordCount']).toLocaleString('en-GB') + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
   });
 }
 
