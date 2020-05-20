@@ -48,6 +48,16 @@ function populate_table(datasets) { // Main filterable table
   datasets.forEach(result => {
     newRow = tableRef.insertRow();
     newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td  id="' + result['key'] + '" class="table-number">' + parseInt(result['recordCount']).toLocaleString('en-GB') + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
+    newRow.innerHTML = `
+    <td>
+      <a href="https://gbif.org/dataset/${result['key']}">${result['title']}</a>
+    </td>
+    <td>${result['publishingOrganizationTitle']}</td>
+    <td id="${result['key']}" class="table-number">
+      ${parseInt(result['recordCount']).toLocaleString('en-GB')}
+    </td>
+    <td>${result['type']}</td>
+    <td>${result['hostingOrganizationTitle']}</td>`;
   });
 }
 
@@ -58,7 +68,7 @@ var getOtherDatasetCounts = async(datasets) => {
         if(res['type'] == 'OCCURRENCE' || res['type'] == 'SAMPLING_EVENT') {
             const d_response = await fetch('https://api.gbif.org/v1/occurrence/count?datasetKey=' + res['key'])
             count = await d_response.json();
-        } else if(res['type'] == 'CHECKLIST') { 
+        } else if(res['type'] == 'CHECKLIST') {
             const d_response = await fetch('http://api.gbif.org/v1/dataset/' + res['key'] + '/metrics')
             var response = await d_response.json();
             count = response['countByOrigin']['SOURCE'];
@@ -106,17 +116,17 @@ const pageLoad = async () => {
 pageLoad();
 
 
-$('#pivotButton').click(function() { 
-    $('#pivot').show(); 
-    $('#datasets').hide(); 
-    $('#pivotButton').addClass('active'); 
-    $('#overviewButton').removeClass('active'); 
+$('#pivotButton').click(function() {
+    $('#pivot').show();
+    $('#datasets').hide();
+    $('#pivotButton').addClass('active');
+    $('#overviewButton').removeClass('active');
 });
-$('#overviewButton').click(function() { 
-    $('#pivot').hide(); 
-    $('#datasets').show(); 
-    $('#pivotButton').removeClass('active'); 
-    $('#overviewButton').addClass('active'); 
+$('#overviewButton').click(function() {
+    $('#pivot').hide();
+    $('#datasets').show();
+    $('#pivotButton').removeClass('active');
+    $('#overviewButton').addClass('active');
 });
 </script>
 </body>
