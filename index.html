@@ -2,8 +2,6 @@
 <html>
 <head>
 <title>Datasets</title>
-<link rel="stylesheet" href="https://data.gbif.no/overview/overview.css">
-
 <script src="https://unpkg.com/tablefilter@0.6.109/dist/tablefilter/tablefilter.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
@@ -12,14 +10,15 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css">
 <style>
-table.pvtTable tbody tr th, table.pvtTable thead tr th { font-size: 1em; }
-table.pvtTable { font-size: 1em; }
-td { padding: 15px; }
-select { font-size: 1em; }
-#pivot { font-family: Arial; }
-#overviewButton, #pivotButton {display: inline-block; background-color: #F0F0F0; padding: 10px; margin-right: 10px;}
-a.active { background-color: #7DB95F !important; color: #FFF; }
-.table-number { text-align: right; }
+    table.pvtTable tbody tr th, table.pvtTable thead tr th { font-size: 1em; }
+    table.pvtTable { font-size: 1em; }
+    td { padding: 15px; }
+    select { font-size: 1em; }
+    #pivot { font-family: Arial; }
+    #overviewButton, #pivotButton {display: inline-block; background-color: #F0F0F0; padding: 10px; margin-right: 10px;}
+    a.active { background-color: #7DB95F !important; color: #FFF; }
+    .table-number { text-align: right; }
+    body { font: 14px/1.4 sans-serif;  }
 </style>
 </head>
 <body>
@@ -44,8 +43,7 @@ a.active { background-color: #7DB95F !important; color: #FFF; }
 </table>
 
 <script>
-function callback (datasets) {
-  // Main filterable table
+function populate_table(datasets) { // Main filterable table
   var tableRef = document.getElementById('datasets').getElementsByTagName('tbody')[0];
   datasets.forEach(result => {
     newRow = tableRef.insertRow();
@@ -56,7 +54,6 @@ function callback (datasets) {
 var getOtherDatasetCounts = async(datasets) => {
     for(var res of datasets) {
         if('recordCount' in res) { continue; }
-        var cellRef = document.getElementById(res['key']);
         var count = 0;
         if(res['type'] == 'OCCURRENCE' || res['type'] == 'SAMPLING_EVENT') {
             const d_response = await fetch('https://api.gbif.org/v1/occurrence/count?datasetKey=' + res['key'])
@@ -66,6 +63,7 @@ var getOtherDatasetCounts = async(datasets) => {
             var response = await d_response.json();
             count = response['countByOrigin']['SOURCE'];
         }
+        var cellRef = document.getElementById(res['key']);
         cellRef.innerHTML = count;
         res['recordCount'] = count;
     }
@@ -75,11 +73,9 @@ const pageLoad = async () => {
     const ds_response = await fetch('https://api.gbif.org/v1/dataset/search?publishingCountry=NO&limit=500');
     var dataset_results = await ds_response.json();
     datasets = dataset_results['results'];
-    await callback(datasets);
-    //createTableJS();
+    await populate_table(datasets);
 
     var tf = new TableFilter(document.getElementById("datasets"), {
-      //base_path: "https://data.gbif.no/overview/tablefilter/",
       base_path: "https://unpkg.com/tablefilter@0.6.109/dist/tablefilter/",
       alternate_rows: true,
       col_types: ['string', 'string', 'number', 'string', 'string', 'date', 'date'],
