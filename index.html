@@ -47,17 +47,16 @@ function populate_table(datasets) { // Main filterable table
   var tableRef = document.getElementById('datasets').getElementsByTagName('tbody')[0];
   datasets.forEach(result => {
     newRow = tableRef.insertRow();
-    newRow.innerHTML = '<td><a href="https://gbif.org/dataset/' + result['key'] + '">' + result['title'] + '</td><td>' + result['publishingOrganizationTitle'] + '</td><td  id="' + result['key'] + '" class="table-number">' + parseInt(result['recordCount']).toLocaleString('en-GB') + '</td><td>' + result['type'] + '</td><td>' + result['hostingOrganizationTitle'] + '</td>';
-    newRow.innerHTML = `
-    <td>
-      <a href="https://gbif.org/dataset/${result['key']}">${result['title']}</a>
-    </td>
-    <td>${result['publishingOrganizationTitle']}</td>
-    <td id="${result['key']}" class="table-number">
-      ${parseInt(result['recordCount']).toLocaleString('en-GB')}
-    </td>
-    <td>${result['type']}</td>
-    <td>${result['hostingOrganizationTitle']}</td>`;
+
+    // Note that trying to embed html closing tags here breaks when shown in Vortex
+    var tdTitle = document.createElement('td');
+    var anch = Object.assign(document.createElement('a'), {href: "https://gbif.org/dataset/" + result['key'], textContent: result['title']});
+    tdTitle.appendChild(anch);
+    newRow.appendChild(tdTitle);
+    newRow.appendChild(Object.assign(document.createElement('td'), {textContent: result['publishingOrganizationTitle']}));
+    newRow.appendChild(Object.assign(document.createElement('td'),{id:result['key'], className:'table-number', textContent:parseInt(result['recordCount']).toLocaleString('en-GB')}));
+    newRow.appendChild(Object.assign(document.createElement('td'), {textContent: result['type']}));
+    newRow.appendChild(Object.assign(document.createElement('td'), {textContent: result['hostingOrganizationTitle']}));
   });
 }
 
@@ -74,7 +73,7 @@ var getOtherDatasetCounts = async(datasets) => {
             count = response['countByOrigin']['SOURCE'];
         }
         var cellRef = document.getElementById(res['key']);
-        cellRef.innerHTML = count;
+        cellRef.innerHTML = parseInt(count).toLocaleString('en-GB');
         res['recordCount'] = count;
     }
 }
