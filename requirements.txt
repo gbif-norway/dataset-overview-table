@@ -1,2 +1,0 @@
-pystache
-requests
