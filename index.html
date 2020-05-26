@@ -75,7 +75,7 @@ function populate_table(datasets) { // Main filterable table
 
 var getOtherDatasetCounts = async(datasets) => {
     for(var res of datasets) {
-        if('recordCount' in res) { continue; }
+        if('recordCount' in res && res['type'] != 'CHECKLIST') { continue; }
         var count = 0;
         if(res['type'] == 'OCCURRENCE' || res['type'] == 'SAMPLING_EVENT') {
             const d_response = await fetch('https://api.gbif.org/v1/occurrence/count?datasetKey=' + res['key'])
