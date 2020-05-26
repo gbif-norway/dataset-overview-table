@@ -76,13 +76,12 @@ function populate_table(datasets) { // Main filterable table
 var getOtherDatasetCounts = async(datasets) => {
     for(var res of datasets) {
         if('recordCount' in res && res['type'] != 'CHECKLIST') { continue; }
-        console.log(res['title']);
         var count = 0;
         if(res['type'] == 'OCCURRENCE' || res['type'] == 'SAMPLING_EVENT') {
             const d_response = await fetch('https://api.gbif.org/v1/occurrence/count?datasetKey=' + res['key'])
             count = await d_response.json();
         } else if(res['type'] == 'CHECKLIST') {
-            const d_response = await fetch('http://api.gbif.org/v1/dataset/' + res['key'] + '/metrics')
+            const d_response = await fetch('https://api.gbif.org/v1/dataset/' + res['key'] + '/metrics')
             var response = await d_response.json();
             count = response['countByOrigin']['SOURCE'];
         }
