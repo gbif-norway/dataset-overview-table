@@ -25,7 +25,7 @@
     table.TF tr th:nth-child(2) { width: 20%; }
     table.TF tr th:nth-child(3) { width: 10%; }
     table.TF tr th:nth-child(4) { width: 10%; }
-    table.TF tr th:nth-child(5) { width: 10%; }
+    table.TF tr th:nth-child(5) { width: 5%; }
     table.TF tr th:nth-child(6) { width: 10%; }
     table.TF tr th:nth-child(7) { width: 10%; }
     table.TF th, table.TF td { text-align: left; padding: 0.2em 1em; }
@@ -50,6 +50,7 @@
     <th data-sort-method="number">Record count</th>
     <th>Type</th>
     <th>Source</th>
+    <th>Keyword</th>
   </tr>
   </thead>
   <tbody>
@@ -71,6 +72,16 @@ function populate_table(datasets) { // Main filterable table
     newRow.appendChild(Object.assign(document.createElement('td'),{id:result['key'], className:'table-number', textContent:parseInt(result['recordCount']).toLocaleString('en-GB')}));
     newRow.appendChild(Object.assign(document.createElement('td'), {textContent: result['type']}));
     newRow.appendChild(Object.assign(document.createElement('td'), {textContent: result['hostingOrganizationTitle']}));
+    var keyword = '';
+    
+    if('keywords' in result) {
+      if(result['keywords'].includes('citizen-science') || result['keywords'].includes('citizen science')) { 
+          keyword = 'citizen-science';
+        } else if(result['keywords'].includes('private-sector') || result['keywords'].includes('private sector')) {
+          keyword = 'private-sector';
+        }
+    }
+    newRow.appendChild(Object.assign(document.createElement('td'), {textContent: keyword}));
   });
 }
 
@@ -97,6 +108,7 @@ const pageLoad = async () => {
         const ds_response = await fetch('https://api.gbif.org/v1/dataset/search?publishingCountry=NO&limit=500');
         var dataset_results = await ds_response.json();
         datasets = dataset_results['results'];
+        console.log(datasets);
     } catch(err) {
         datasets = cache;
     }
@@ -110,8 +122,7 @@ const pageLoad = async () => {
       col_2: 'none',
       col_3: 'select',
       col_4: 'select',
-      col_5: 'none',
-      col_6: 'none',
+      col_5: 'select',
       clear_filter_text: '- All -',
       extensions: [{ name: 'sort' }]
     });
