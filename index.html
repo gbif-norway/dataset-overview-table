@@ -79,6 +79,8 @@ function populate_table(datasets) { // Main filterable table
           keyword = 'citizen-science';
         } else if(result['keywords'].includes('private-sector') || result['keywords'].includes('private sector')) {
           keyword = 'private-sector';
+        } else if(result['keywords'].includes('musit-norway') || result['keywords'].includes('musit norway')) {
+          keyword = 'musit-norway';
         }
     }
     newRow.appendChild(Object.assign(document.createElement('td'), {textContent: keyword}));
